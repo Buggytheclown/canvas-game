@@ -1,118 +1,129 @@
-export function InDisplay() {
-        this._stack = [];
+export class InDisplay {
 
-        this.push = function (el) {
-            this._stack.push(el);
-        };
+    displaySize;
+    _stack = [];
 
-        this.pop = function (popedEl) {
-            this._stack = this._stack.filter(function (el) {
-                return JSON.stringify(el) !== JSON.stringify(popedEl)
-            })
-        };
+    constructor(displaySize) {
+        this.displaySize = {left: 0, right: displaySize.x, top: 0, bottom: displaySize.y};
+    }
 
-        this.draw = function (context) {
-            this._stack.forEach(function (el) {
-                el.draw(context);
-            })
-        };
+    push(el) {
+        this._stack.push(el);
+    };
 
-        this.clear = function (context) {
-            this._stack.forEach(function (el) {
-                el.clear(context);
-            })
-        };
+    pop(popedEl) {
+        this._stack = this._stack.filter(function (el) {
+            return el.state !== popedEl.state
+        })
+    };
 
-        this.update = function () {
-            var _this = this;
-            this._stack.forEach(function (elUpdated) {
-                var newState = elUpdated.update();
+    draw(context) {
+        this._stack.forEach(el => el.draw(context))
+    };
 
-                if (newState) {
-                    var elUpdatedCoordinates = _this._calcCorners(newState);
+    clear(context) {
+        this._stack.forEach(el => el.clear(context))
+    };
 
-                    _this._stack.forEach(function (stackEl) {
-                        if (JSON.stringify(stackEl) !== JSON.stringify(elUpdated)) {
-                            var coordinatesStackEl = _this._calcCorners(stackEl.getState());
+    update() {
+        this._stack.forEach(elUpdated => {
+            var newState = elUpdated.update();
 
-                            if (_this._intersection(elUpdatedCoordinates, coordinatesStackEl)) {
+            if (newState) {
+                var elUpdatedCoordinates = this._calcCorners(newState);
+                if (this.isElementInDisplay(elUpdatedCoordinates)) {
+                    this._stack.forEach(stackEl=> {
+                        if (stackEl.state !== elUpdated.state) {
+                            var coordinatesStackEl = this._calcCorners(stackEl.state);
+
+                            if (this._intersection(elUpdatedCoordinates, coordinatesStackEl)) {
                                 stackEl.hit(elUpdated.getHitBy(), newState);
                                 elUpdated.rollBack();
                             }
                         }
 
                     })
+                } else {
+                    elUpdated.rollBack();
                 }
-
-            })
-        };
-
-        this._intersection = function (a, b) {
-            var crash = true;
-            if ((a.bottom < b.top) ||
-                    (a.top > b.bottom) ||
-                    (a.right < b.left) ||
-                    (a.left > b.right)) {
-                crash = false;
             }
-            return crash;
-        };
 
-        this._revertSide = function (side) {
-            switch (side) {
-                case 'LEFT':
-                    return 'RIGHT';
-                    break;
-                case 'RIGHT':
-                    return 'LEFT';
-                    break;
-                case 'UP':
-                    return 'DOWN';
-                    break;
-                case 'DOWN':
-                    return 'UP';
-                    break;
-            }
-        };
+        })
+    };
 
-        this._calcCorners = function (state) {
-            return {left: state.x, right: state.x + state.w, top: state.y, bottom: state.y + state.h};
-        };
+    isElementInDisplay(objcoor) {
+        var ds = this.displaySize;
+        return objcoor.left > ds.left && objcoor.right < ds.right &&
+            objcoor.top > ds.top && objcoor.bottom < ds.bottom
+    };
 
-        this._calcCoordinates = function (side, state) {
-            var coordinates = {x1: null, y1: null, x2: null, y2: null};
-            switch (side) {
-                case 'LEFT':
-                    coordinates.x1 = state.x;
-                    coordinates.y1 = state.y;
-                    coordinates.x2 = state.x;
-                    coordinates.y2 = state.y + state.h;
-                    break;
-                case 'RIGHT':
-                    coordinates.x1 = state.x + state.w;
-                    coordinates.y1 = state.y;
-                    coordinates.x2 = state.x + state.w;
-                    coordinates.y2 = state.y + state.h;
-                    break;
-                case 'UP':
-                    coordinates.x1 = state.x;
-                    coordinates.y1 = state.y;
-                    coordinates.x2 = state.x + state.w;
-                    coordinates.y2 = state.y;
-                    break;
-                case 'DOWN':
-                    coordinates.x1 = state.x;
-                    coordinates.y1 = state.y + state.h;
-                    coordinates.x2 = state.x + state.w;
-                    coordinates.y2 = state.y + state.h;
-                    break;
-                default:
-                    console.log('BAD side in getCoordinates');
-            }
-            return coordinates;
-        };
-
-        this.canMove = function (side, state) {
-            console.log('DEPRICATED canMove');
+    _intersection(a, b) {
+        var crash = true;
+        if ((a.bottom < b.top) ||
+            (a.top > b.bottom) ||
+            (a.right < b.left) ||
+            (a.left > b.right)) {
+            crash = false;
         }
-    }
+        return crash;
+    };
+
+    _revertSide(side) {
+        switch (side) {
+            case 'LEFT':
+                return 'RIGHT';
+                break;
+            case 'RIGHT':
+                return 'LEFT';
+                break;
+            case 'UP':
+                return 'DOWN';
+                break;
+            case 'DOWN':
+                return 'UP';
+                break;
+        }
+    };
+
+    _calcCorners(state) {
+        // if(state.x && state.w && state.y && state.h) {
+            return {left: state.x, right: state.x + state.w, top: state.y, bottom: state.y + state.h};
+        // } else {
+        //     throw new TypeError(`_calcCorners got a bad state to calc:`, state.x, state.y)
+        // }
+    };
+
+    _calcCoordinates = function (side, state) {
+        var coordinates = {x1: null, y1: null, x2: null, y2: null};
+        switch (side) {
+            case 'LEFT':
+                coordinates.x1 = state.x;
+                coordinates.y1 = state.y;
+                coordinates.x2 = state.x;
+                coordinates.y2 = state.y + state.h;
+                break;
+            case 'RIGHT':
+                coordinates.x1 = state.x + state.w;
+                coordinates.y1 = state.y;
+                coordinates.x2 = state.x + state.w;
+                coordinates.y2 = state.y + state.h;
+                break;
+            case 'UP':
+                coordinates.x1 = state.x;
+                coordinates.y1 = state.y;
+                coordinates.x2 = state.x + state.w;
+                coordinates.y2 = state.y;
+                break;
+            case 'DOWN':
+                coordinates.x1 = state.x;
+                coordinates.y1 = state.y + state.h;
+                coordinates.x2 = state.x + state.w;
+                coordinates.y2 = state.y + state.h;
+                break;
+            default:
+                console.log('BAD side in getCoordinates');
+        }
+        return coordinates;
+    };
+
+}

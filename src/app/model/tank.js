@@ -1,15 +1,21 @@
-export class Tank {
+import {AbstractMovable} from "./abstractMovable";
+
+
+export class Tank extends AbstractMovable{
     _stateChanged = true;
     _state;
     _prevState;
     color;
     speed;
+    driver;
     // barrel;
 
-    constructor(inDisplay, keyboard) {
-        this._state = {x: 150, y: 150, w:30, h:20, onDirection: 'RIGHT',};
+    constructor(inDisplay, driver) {
+        super();
+        this._prevState = this._state = {x: 150, y: 150, w:30, h:20, onDirection: 'RIGHT'};
         this.speed = 5;
         this.color = "green";
+        this.driver = driver;
         // this.barrel = new Barrel();
     }
 
@@ -18,35 +24,40 @@ export class Tank {
     }
 
     draw(context) {
-        this._calculateState();
-        context.fillStyle = this.color;
-        context.fillRect(this._state.x, this._state.y, this._state.w, this._state.h);
-        this.barrel.draw(this);
+        // this._calculateState();
+        if(this._stateChanged) {
+            context.fillStyle = this.color;
+            context.fillRect(this._state.x, this._state.y, this._state.w, this._state.h);
+            this._stateChanged = false;
+        }
+        // this.barrel.draw(this);
     };
 
     clear(context) {
-        context.clearRect(this._state.x, this._state.y, this._state.w, this._state.h);
-        this.barrel.clear(context);
+        if(this._stateChanged){
+            context.clearRect(this._prevState.x, this._prevState.y, this._prevState.w, this._prevState.h);
+        }
+        // this.barrel.clear(context);
     };
 
-    _calculateState() {
-        switch (this.state.onDirection) {
-            case 'RIGHT':
-            case 'LEFT':
-                this._state.x = tank.x;
-                this._state.y = tank.y;
-                this._state.h = this._height;
-                this._state.w = this._width;
-                break;
-            case 'DOWN':
-            case 'UP':
-                this._state.x = tank.x - (this._height - this._width) / 2;
-                this._state.y = tank.y + (this._height - this._width) / 2;
-                this._state.h = this._width;
-                this._state.w = this._height;
-                break;
-        }
-    };
+    // _calculateState() {
+    //     switch (this.state.onDirection) {
+    //         case 'RIGHT':
+    //         case 'LEFT':
+    //             this._state.x = tank.x;
+    //             this._state.y = tank.y;
+    //             this._state.h = this._height;
+    //             this._state.w = this._width;
+    //             break;
+    //         case 'DOWN':
+    //         case 'UP':
+    //             this._state.x = tank.x - (this._height - this._width) / 2;
+    //             this._state.y = tank.y + (this._height - this._width) / 2;
+    //             this._state.h = this._width;
+    //             this._state.w = this._height;
+    //             break;
+    //     }
+    // };
 
     // function Barrel() {
     //     this._color = 'black';
@@ -197,11 +208,7 @@ export class Tank {
         this._state = this._prevState;
     };
 
-    get state() {
-        return this._state;
-    };
-
-    set state(newStateParam) {
+    setState(newStateParam) {
         this._prevState = this._state;
         this._state = Object.assign({}, this.state, newStateParam);
         this._stateChanged = true;
@@ -210,21 +217,23 @@ export class Tank {
     update() {
         // this.barrel.update();
 
-        if (keyboard.left) {
-            var newState = this.state({x: this.state.x - this.speed, onDirection: 'LEFT'});
-            return newState;
+        if (this.driver.left) {
+            // if(this.state.onDirection === 'LEFT') {
+                this.setState({x: this.state.x - this.speed, onDirection: 'LEFT'});
+            // }
+            return this.state;
 
-        } else if (keyboard.right) {
-            var newState = this.state({x: this.state.x + this.speed, onDirection: 'RIGHT'});
-            return newState;
+        } else if (this.driver.right) {
+            this.setState({x: this.state.x + this.speed, onDirection: 'RIGHT'});
+            return this.state;
 
-        } else if (keyboard.up) {
-            var newState = this.state({y: this.state.y - this.speed, onDirection: 'UP'});
-            return newState;
+        } else if (this.driver.up) {
+            this.setState({y: this.state.y - this.speed, onDirection: 'UP'});
+            return this.state;
 
-        } else if (keyboard.down) {
-            var newState = this.state({y: this.state.y + this.speed, onDirection: 'DOWN'});
-            return newState;
+        } else if (this.driver.down) {
+            this.setState({y: this.state.y + this.speed, onDirection: 'DOWN'});
+            return this.state;
         }
 
         // if (keyboard.space) {
