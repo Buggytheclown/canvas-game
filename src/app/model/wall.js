@@ -1,59 +1,73 @@
-export function Wall(inDisplay, x, y, h, w, color) {
+export class Wall {
+    _state;
+    color;
+    inDisplay;
+
+    constructor(inDisplay, x, y, h, w, color) {
         this._state = {x: x, y: y, h: h, w: w};
         this.color = color;
-
-        this.update = function () {
-            return null;
-        };
-
-        function BoomAnimation(state) {
-            this._state = state;
-            this.color = 'red';
-            this.frameLength = 150;
-
-            this.update = function () {
-                if (this.frameLength > 0) {
-                    this.frameLength--;
-                } else {
-                    inDisplay.pop(this);
-                    this.clear();
-                }
-                return null;
-            };
-            this.draw = function () {
-                context.fillStyle = this.color;
-                context.fillRect(this._state.x, this._state.y, this._state.w + 2, this._state.h + 2);
-            };
-
-            this.clear = function () {
-                context.clearRect(this._state.x, this._state.y, this._state.w + 2, this._state.h + 2);
-            };
-
-            this.getState = function () {
-                return this._state;
-            };
-
-            this.hit = function () {
-                return;
-            }
-
-        };
-
-        this.hit = function (obj, coordinates) {
-            if (obj.type === 'BULLET') {
-                inDisplay.push(new BoomAnimation(coordinates));
-            }
-        };
-
-        this.draw = function (context) {
-            context.fillStyle = this.color;
-            context.fillRect(this._state.x, this._state.y, this._state.w, this._state.h);
-        };
-
-        this.clear = function (context) {
-        };
-
-        this.getState = function () {
-            return this._state;
-        };
+        this.inDisplay = inDisplay;
     }
+
+    update() {
+        return null;
+    };
+
+    hit(obj, coordinates) {
+        if (obj.type === 'BULLET') {
+            this.inDisplay.push(new BoomAnimation(coordinates));
+        }
+    };
+
+    draw(context) {
+        context.fillStyle = this.color;
+        context.fillRect(this.state.x, this.state.y, this.state.w, this.state.h);
+    };
+
+    clear(context) {
+    };
+
+    get state() {
+        return this._state;
+    };
+}
+
+class BoomAnimation {
+    _state;
+    color;
+    frameLength;
+
+    constructor(state) {
+        this._state = state;
+        this.color = 'red';
+        this.frameLength = 150;
+    }
+
+    update() {
+        if (this.frameLength > 0) {
+            this.frameLength--;
+        } else {
+            inDisplay.pop(this);
+            this.clear();
+        }
+        return null;
+    };
+
+    draw(context) {
+        context.fillStyle = this.color;
+        context.fillRect(this._state.x, this._state.y, this._state.w + 2, this._state.h + 2);
+    };
+
+    clear(context) {
+        context.clearRect(this._state.x, this._state.y, this._state.w + 2, this._state.h + 2);
+    };
+
+    get state() {
+        return this._state;
+    };
+
+    hit() {
+        return;
+    }
+
+}

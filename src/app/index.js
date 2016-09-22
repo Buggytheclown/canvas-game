@@ -4,7 +4,6 @@ import {Wall} from "./model/wall";
 import {Keyboard} from "./keyboard";
 
 
-
 class Main {
     context;
     interval;
@@ -25,7 +24,7 @@ class Main {
 
     initObjects() {
         var keyboard = Keyboard();
-        this.inDisplay.push(new Wall(this.inDisplay, 400, 40, 300, 4, 'black'));
+        this.inDisplay.push(new Wall(this.inDisplay, 400, 40, 300, 8, 'black'));
         // this.inDisplay.push(new Tank(this.inDisplay, keyboard));
     }
 
