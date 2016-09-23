@@ -14,7 +14,7 @@ export function Keybot() {
         for (let key in keyboard) {
             keyboard[key] = key === rndKey;
         }
-    }, 250);
+    }, 750);
 
     return keyboard;
 }
