@@ -2,6 +2,8 @@ import {InDisplay} from "./model/display";
 import {Tank} from "./model/tank";
 import {Wall} from "./model/wall";
 import {Keyboard} from "./keyboard";
+import {Keybot} from "./model/keybot";
+import {Animate} from "./model/animate";
 
 
 class Main {
@@ -19,22 +21,25 @@ class Main {
     startGame() {
         this.initObjects();
         this.mainLoop();
-        // window.requestAnimationFrame(this.mainLoop.bind(this));
-        // this.interval = setInterval(this.mainLoop.bind(this), 15);
-        // for (let i = 0; i < 50; i++) {
-        //     setTimeout(this.mainLoop.bind(this), 150)
-        // }
     }
 
     initObjects() {
-        var keyboard = Keyboard();
-        this.inDisplay.push(new Wall(this.inDisplay, 400, 40, 300, 8, 'black'));
-        this.inDisplay.push(new Tank(this.inDisplay, keyboard));
+        // this.inDisplay.push(new Tank(this.inDisplay, Keyboard(), {x: 150, y: 150, w:30, h:30, color:'green', speed:5}));
+        // this.inDisplay.push(new Wall(this.inDisplay, {x:300, y:100, w:8, h:200}, 'black'));
+
+
+        this.inDisplay.push(new Animate(this.context));
+        // this.inDisplay.push(new Tank(this.inDisplay, Keybot(), {x: 200, y: 200, w:30, h:30, color:'red', speed:3}));
+        // this.inDisplay.push(new Tank(this.inDisplay, Keybot(), {x: 150, y: 250, w:30, h:30, color:'yellow', speed:3}));
+        // this.inDisplay.push(new Tank(this.inDisplay, Keybot(), {x: 450, y: 250, w:30, h:30, color:'purple', speed:3}));
+        // this.inDisplay.push(new Tank(this.inDisplay, Keybot(), {x: 550, y: 250, w:30, h:30, color:'purple', speed:3}));
+
+
+
     }
 
     mainLoop() {
         this.inDisplay.update();
-        this.inDisplay.clear(this.context);
         this.inDisplay.draw(this.context);
         window.requestAnimationFrame(this.mainLoop.bind(this));
     }

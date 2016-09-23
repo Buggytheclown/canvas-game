@@ -1,17 +1,17 @@
-export class Wall {
+import {AbstractUnmovable} from "./abstractUnmovable";
+
+export class Wall extends AbstractUnmovable {
     _state;
+    _stateChanged = true;
     color;
     inDisplay;
 
-    constructor(inDisplay, x, y, h, w, color) {
-        this._state = {x: x, y: y, h: h, w: w};
+    constructor(inDisplay, state, color) {
+        super();
+        this._state = state;
         this.color = color;
         this.inDisplay = inDisplay;
     }
-
-    update() {
-        return null;
-    };
 
     hit(obj, coordinates) {
         if (obj.type === 'BULLET') {
@@ -20,11 +20,16 @@ export class Wall {
     };
 
     draw(context) {
-        context.fillStyle = this.color;
-        context.fillRect(this.state.x, this.state.y, this.state.w, this.state.h);
+        if (this._stateChanged) {
+            this.clear(context);
+            context.fillStyle = this.color;
+            context.fillRect(this.state.x, this.state.y, this.state.w, this.state.h);
+            this._stateChanged = false;
+        }
     };
 
     clear(context) {
+        context.clearRect(this.state.x, this.state.y, this.state.w, this.state.h)
     };
 
     get state() {

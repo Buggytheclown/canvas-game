@@ -31,7 +31,7 @@ export class InDisplay {
 
             if (newState) {
                 var elUpdatedCoordinates = this._calcCorners(newState);
-                if (this.isElementInDisplay(elUpdatedCoordinates)) {
+                if (this._isElementInDisplay(elUpdatedCoordinates)) {
                     this._stack.forEach(stackEl=> {
                         if (stackEl.state !== elUpdated.state) {
                             var coordinatesStackEl = this._calcCorners(stackEl.state);
@@ -51,10 +51,10 @@ export class InDisplay {
         })
     };
 
-    isElementInDisplay(objcoor) {
+    _isElementInDisplay(objCoor) {
         var ds = this.displaySize;
-        return objcoor.left > ds.left && objcoor.right < ds.right &&
-            objcoor.top > ds.top && objcoor.bottom < ds.bottom
+        return objCoor.left > ds.left && objCoor.right < ds.right &&
+            objCoor.top > ds.top && objCoor.bottom < ds.bottom
     };
 
     _intersection(a, b) {

@@ -1,6 +1,6 @@
 export class AbstractMovable {
     constructor() {
-        ['draw', 'clear', 'hit', 'getHitBy', 'rollBack', 'update']
+        ['draw', 'hit', 'getHitBy', 'rollBack', 'update']
             .forEach(el => {
                     if (this[el] === undefined) {
                         throw new TypeError(`AbstractMovable model must overwrite '${el}' method in ${this}`)

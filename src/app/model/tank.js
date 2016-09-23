@@ -1,32 +1,29 @@
 import {AbstractMovable} from "./abstractMovable";
 
 
-export class Tank extends AbstractMovable{
+export class Tank extends AbstractMovable {
     _stateChanged = true;
     _state;
     _prevState;
-    color;
-    speed;
     driver;
     // barrel;
 
-    constructor(inDisplay, driver) {
+    constructor(inDisplay, driver, state) {
         super();
-        this._prevState = this._state = {x: 150, y: 150, w:30, h:20, onDirection: 'RIGHT'};
-        this.speed = 5;
-        this.color = "green";
+        this._prevState = this._state = {...state, ...{onDirection: 'STOP'}};
         this.driver = driver;
         // this.barrel = new Barrel();
     }
 
-    get state(){
+    get state() {
         return this._state;
     }
 
     draw(context) {
         // this._calculateState();
-        if(this._stateChanged) {
-            context.fillStyle = this.color;
+        if (this._stateChanged) {
+            this.clear(context);
+            context.fillStyle = this.state.color;
             context.fillRect(this._state.x, this._state.y, this._state.w, this._state.h);
             this._stateChanged = false;
         }
@@ -34,9 +31,7 @@ export class Tank extends AbstractMovable{
     };
 
     clear(context) {
-        if(this._stateChanged){
-            context.clearRect(this._prevState.x, this._prevState.y, this._prevState.w, this._prevState.h);
-        }
+        context.clearRect(this._prevState.x, this._prevState.y, this._prevState.w, this._prevState.h);
         // this.barrel.clear(context);
     };
 
@@ -219,25 +214,31 @@ export class Tank extends AbstractMovable{
 
         if (this.driver.left) {
             // if(this.state.onDirection === 'LEFT') {
-                this.setState({x: this.state.x - this.speed, onDirection: 'LEFT'});
+            this.setState({x: this.state.x - this.state.speed, onDirection: 'LEFT'});
             // }
-            return this.state;
 
         } else if (this.driver.right) {
-            this.setState({x: this.state.x + this.speed, onDirection: 'RIGHT'});
-            return this.state;
+            this.setState({x: this.state.x + this.state.speed, onDirection: 'RIGHT'});
 
         } else if (this.driver.up) {
-            this.setState({y: this.state.y - this.speed, onDirection: 'UP'});
-            return this.state;
+            this.setState({y: this.state.y - this.state.speed, onDirection: 'UP'});
 
         } else if (this.driver.down) {
-            this.setState({y: this.state.y + this.speed, onDirection: 'DOWN'});
-            return this.state;
+            this.setState({y: this.state.y + this.state.speed, onDirection: 'DOWN'});
+
+        } else {
+            if (this.state.onDirection !== 'STOP') {
+                this.setState({onDirection: 'STOP'});
+            }
         }
+
 
         // if (keyboard.space) {
         //     this.barrel.shoot(this);
         // }
+
+        return this.state;
     }
+
+
 }
