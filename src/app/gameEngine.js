@@ -1,9 +1,11 @@
-export class InDisplay {
+export class GameEngine {
 
     displaySize;
     _stack = [];
+    context;
 
-    constructor(displaySize) {
+    constructor(context, displaySize) {
+        this.context = context;
         this.displaySize = {left: 0, right: displaySize.x, top: 0, bottom: displaySize.y};
     }
 
@@ -17,34 +19,35 @@ export class InDisplay {
         })
     };
 
-    draw(context) {
-        this._stack.forEach(el => el.draw(context))
+    draw() {
+        this._stack.forEach(el => el.draw(this.context))
     };
 
-    clear(context) {
-        this._stack.forEach(el => el.clear(context))
+    clear() {
+        this._stack.forEach(el => el.clear(this.context))
     };
 
     update() {
         this._stack.forEach(elUpdated => {
-            var newState = elUpdated.update();
+            var elUpdatedState = elUpdated.update(this.context);
 
-            if (newState) {
-                var elUpdatedCoordinates = this._calcCorners(newState);
+            if (elUpdatedState) {
+                var elUpdatedCoordinates = this._calcCorners(elUpdatedState);
                 if (this._isElementInDisplay(elUpdatedCoordinates)) {
                     this._stack.forEach(stackEl=> {
                         if (stackEl.state !== elUpdated.state) {
                             var coordinatesStackEl = this._calcCorners(stackEl.state);
 
                             if (this._intersection(elUpdatedCoordinates, coordinatesStackEl)) {
-                                stackEl.hit(elUpdated.getHitBy(), newState);
-                                elUpdated.rollBack();
+                                // pass the copy, due to elUpdated can be destroyed or it state can be modified (
+                                stackEl.hit(Object.assign({}, elUpdated.getHitBy()), Object.assign({}, elUpdatedState));
+                                elUpdated.rollBack(this.context);
                             }
                         }
 
                     })
                 } else {
-                    elUpdated.rollBack();
+                    elUpdated.rollBack(this.context);
                 }
             }
 
@@ -87,7 +90,7 @@ export class InDisplay {
 
     _calcCorners(state) {
         // if(state.x && state.w && state.y && state.h) {
-            return {left: state.x, right: state.x + state.w, top: state.y, bottom: state.y + state.h};
+        return {left: state.x, right: state.x + state.w, top: state.y, bottom: state.y + state.h};
         // } else {
         //     throw new TypeError(`_calcCorners got a bad state to calc:`, state.x, state.y)
         // }

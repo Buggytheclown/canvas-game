@@ -3,56 +3,30 @@ import {AbstractMovable} from "./abstractMovable";
 
 export class Tank extends AbstractMovable {
     _stateChanged = true;
-    _state;
-    _prevState;
+    state;
+    prevState;
     driver;
-    // barrel;
+    gun;
 
-    constructor({inDisplay, driver, drawer, state}) {
+    constructor({gameEngine, driver, drawer, state, gun}) {
         super();
-        this._prevState = this._state = {...state, ...{onDirection: 'STOP'}};
+        this.prevState = this.state = {...state, ...{onDirection: 'RIGHT', inMove: true}};
         this.driver = driver;
         this.drawer = drawer;
-        // this.barrel = new Barrel();
-    }
-
-    get state() {
-        return this._state;
+        this.gun = gun;
     }
 
     draw(context) {
-        // this._calculateState();
         if (this._stateChanged) {
             this.clear(context);
-            this.drawer.draw(this.state);
+            this.drawer.draw(context, this.state);
             this._stateChanged = false;
         }
-        // this.barrel.draw(this);
     };
 
     clear(context) {
-        context.clearRect(this._prevState.x, this._prevState.y, this._prevState.w, this._prevState.h);
-        // this.barrel.clear(context);
+        context.clearRect(this.prevState.x, this.prevState.y, this.prevState.w, this.prevState.h);
     };
-
-    // _calculateState() {
-    //     switch (this.state.onDirection) {
-    //         case 'RIGHT':
-    //         case 'LEFT':
-    //             this._state.x = tank.x;
-    //             this._state.y = tank.y;
-    //             this._state.h = this._height;
-    //             this._state.w = this._width;
-    //             break;
-    //         case 'DOWN':
-    //         case 'UP':
-    //             this._state.x = tank.x - (this._height - this._width) / 2;
-    //             this._state.y = tank.y + (this._height - this._width) / 2;
-    //             this._state.h = this._width;
-    //             this._state.w = this._height;
-    //             break;
-    //     }
-    // };
 
     hit(obj) {
         console.log('Tank was hitten by: ', obj.type);
@@ -63,42 +37,39 @@ export class Tank extends AbstractMovable {
     };
 
     rollBack() {
-        this._state = this._prevState;
+        this.state = this.prevState;
+        this.driver.rollBack();
     };
 
     setState(newStateParam) {
-        this._prevState = this._state;
-        this._state = Object.assign({}, this.state, newStateParam);
+        this.prevState = this.state;
+        this.state = Object.assign({}, this.state, newStateParam);
         this._stateChanged = true;
     };
 
     update() {
-        // this.barrel.update();
+        this.gun.update();
 
         if (this.driver.left) {
-            // if(this.state.onDirection === 'LEFT') {
-            this.setState({x: this.state.x - this.state.speed, onDirection: 'LEFT'});
-            // }
+            this.setState({x: this.state.x - this.state.speed, onDirection: 'LEFT', inMove: true});
 
         } else if (this.driver.right) {
-            this.setState({x: this.state.x + this.state.speed, onDirection: 'RIGHT'});
+            this.setState({x: this.state.x + this.state.speed, onDirection: 'RIGHT', inMove: true});
 
         } else if (this.driver.up) {
-            this.setState({y: this.state.y - this.state.speed, onDirection: 'UP'});
+            this.setState({y: this.state.y - this.state.speed, onDirection: 'UP', inMove: true});
 
         } else if (this.driver.down) {
-            this.setState({y: this.state.y + this.state.speed, onDirection: 'DOWN'});
+            this.setState({y: this.state.y + this.state.speed, onDirection: 'DOWN', inMove: true});
 
         } else {
-            if (this.state.onDirection !== 'STOP') {
-                this.setState({onDirection: 'STOP'});
-            }
+                this.setState({inMove: false});
         }
 
 
-        // if (keyboard.space) {
-        //     this.barrel.shoot(this);
-        // }
+        if (this.driver.space) {
+            this.gun.shoot({...this.state, ...{onDirection: this.prevState.onDirection}});
+        }
 
         return this.state;
     }

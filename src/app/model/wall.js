@@ -1,21 +1,22 @@
 import {AbstractUnmovable} from "./abstractUnmovable";
+import {AbstractMovable} from "./abstractMovable";
 
 export class Wall extends AbstractUnmovable {
     _state;
     _stateChanged = true;
     color;
-    inDisplay;
+    gameEngine;
 
-    constructor(inDisplay, state, color) {
+    constructor(gameEngine, state, color) {
         super();
         this._state = state;
         this.color = color;
-        this.inDisplay = inDisplay;
+        this.gameEngine = gameEngine;
     }
 
     hit(obj, coordinates) {
         if (obj.type === 'BULLET') {
-            this.inDisplay.push(new BoomAnimation(coordinates));
+            this.gameEngine.push(new BoomAnimation(this.gameEngine, coordinates));
         }
     };
 
@@ -37,34 +38,44 @@ export class Wall extends AbstractUnmovable {
     };
 }
 
-class BoomAnimation {
+class BoomAnimation extends AbstractMovable{
     _state;
     color;
     frameLength;
 
-    constructor(state) {
+    constructor(inDisplay, state) {
+        super();
+        this.gameEngine = inDisplay;
         this._state = state;
-        this.color = 'red';
+        this.color = 'green';
         this.frameLength = 150;
     }
 
-    update() {
+    update(context) {
         if (this.frameLength > 0) {
             this.frameLength--;
         } else {
-            inDisplay.pop(this);
-            this.clear();
+            this.gameEngine.pop(this);
+            this.clear(context);
         }
         return null;
     };
 
+    getHitBy(){
+        return null;
+    }
+
+    rollBack(){
+        return null;
+    }
+
     draw(context) {
         context.fillStyle = this.color;
-        context.fillRect(this._state.x, this._state.y, this._state.w + 2, this._state.h + 2);
+        context.fillRect(this._state.x, this._state.y, this._state.w + 4, this._state.h + 4);
     };
 
     clear(context) {
-        context.clearRect(this._state.x, this._state.y, this._state.w + 2, this._state.h + 2);
+        context.clearRect(this._state.x, this._state.y, this._state.w + 4, this._state.h + 4);
     };
 
     get state() {

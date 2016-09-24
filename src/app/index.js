@@ -1,26 +1,30 @@
-import {InDisplay} from "./model/display";
+import {GameEngine} from "./gameEngine";
 import {Tank} from "./model/tank";
 import {Wall} from "./model/wall";
-import {Keyboard} from "./keyboard";
+import {keyboard1} from "./keyboard1";
 import {Keybot} from "./keybot";
-import {Animate} from "./model/animate";
+import {DynamicDrawer} from "./model/dynamicDrawer";
+import {Gun} from "./model/gun";
+import {keyboard2} from "./keyboard2";
+import {StaticDrawer} from "./model/staticDrawer";
 
 
 class Main {
     context;
     canvas;
-    inDisplay;
+    gameEngine;
 
     constructor() {
+        window.playGame = true;
         this.canvas = document.getElementById('game');
         this.context = this.canvas.getContext('2d');
-        this.inDisplay = new InDisplay({x: this.canvas.width, y: this.canvas.height});
+        this.gameEngine = new GameEngine(this.context, {x: this.canvas.width, y: this.canvas.height});
     }
 
     startGame() {
         this.initObjects()
             .then(success=>this.mainLoop(),
-                error=>console.log('Error to init Objects'));
+                error=>console.log('Error to init Objects: ', error));
     }
 
     initObjects() {
@@ -32,71 +36,86 @@ class Main {
             };
         });
 
-        this.inDisplay.push(
+        this.gameEngine.push(
             new Tank({
-                inDisplay: this.inDisplay,
-                driver: Keyboard(),
-                drawer: new Animate({
-                    context: this.context,
+                gameEngine: this.gameEngine,
+                driver: keyboard1(),
+                gun: new Gun(this.gameEngine, new StaticDrawer({spritePromise})),
+                drawer: new DynamicDrawer({
                     spritePromise: spritePromise,
                     onSpriteType: 1
                 }),
-                state: {x: 150, y: 150, w: 30, h: 30, speed: 5}
+                state: {x: 100, y: 400, w: 30, h: 30, speed: 5}
             }));
 
-        this.inDisplay.push(new Wall(this.inDisplay, {x: 300, y: 100, w: 8, h: 200}, 'grey'));
-
-        this.inDisplay.push(
+        this.gameEngine.push(
             new Tank({
-                inDisplay: this.inDisplay,
-                driver: Keybot(),
-                drawer: new Animate({
-                    context: this.context,
+                gameEngine: this.gameEngine,
+                driver: keyboard2(),
+                gun: new Gun(this.gameEngine, new StaticDrawer({spritePromise})),
+                drawer: new DynamicDrawer({
+                    spritePromise: spritePromise,
+                    onSpriteType: 1
+                }),
+                state: {x: 190, y: 400, w: 30, h: 30, speed: 5}
+            }));
+
+        this.gameEngine.push(new Wall(this.gameEngine, {x: 300, y: 100, w: 8, h: 200}, 'grey'));
+
+        this.gameEngine.push(
+            new Tank({
+                gameEngine: this.gameEngine,
+                driver: new Keybot(),
+                gun: new Gun(this.gameEngine, new StaticDrawer({spritePromise})),
+                drawer: new DynamicDrawer({
                     spritePromise: spritePromise,
                     onSpriteType: 0
                 }),
                 state: {x: 200, y: 200, w: 30, h: 30, speed: 1}
             }));
-        this.inDisplay.push(
+        this.gameEngine.push(
             new Tank({
-                inDisplay: this.inDisplay,
-                driver: Keybot(),
-                drawer: new Animate({
-                    context: this.context,
+                gameEngine: this.gameEngine,
+                driver: new Keybot(),
+                gun: new Gun(this.gameEngine, new StaticDrawer({spritePromise})),
+                drawer: new DynamicDrawer({
                     spritePromise: spritePromise,
                     onSpriteType: 0
                 }),
                 state: {x: 150, y: 250, w: 30, h: 30, speed: 2}
             }));
-        this.inDisplay.push(
+        this.gameEngine.push(
             new Tank({
-                inDisplay: this.inDisplay,
-                driver: Keybot(),
-                drawer: new Animate({
-                    context: this.context,
+                gameEngine: this.gameEngine,
+                driver: new Keybot(),
+                gun: new Gun(this.gameEngine, new StaticDrawer({spritePromise})),
+                drawer: new DynamicDrawer({
                     spritePromise: spritePromise,
                     onSpriteType: 0
                 }),
                 state: {x: 450, y: 250, w: 30, h: 30, speed: 3}
             }));
-        this.inDisplay.push(
+        this.gameEngine.push(
             new Tank({
-                inDisplay: this.inDisplay,
-                driver: Keybot(),
-                drawer: new Animate({
-                    context: this.context,
+                gameEngine: this.gameEngine,
+                driver: new Keybot(),
+                gun: new Gun(this.gameEngine, new StaticDrawer({spritePromise})),
+                drawer: new DynamicDrawer({
                     spritePromise: spritePromise,
                     onSpriteType: 0
                 }),
                 state: {x: 550, y: 250, w: 30, h: 30, speed: 4}
             }));
 
-        return Promise.all([spritePromise])
+        return Promise.all([spritePromise]);
     }
 
     mainLoop() {
-        this.inDisplay.update();
-        this.inDisplay.draw(this.context);
+        if (window.playGame) {
+            this.gameEngine.update();
+            this.gameEngine.draw();
+        }
+
         window.requestAnimationFrame(this.mainLoop.bind(this));
     }
 }

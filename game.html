@@ -419,19 +419,19 @@
                 this.update = function () {
                     switch (this.direction) {
                         case 'LEFT':
-                            var newState = this._setState({x: this.getState().x - this.speed});
+                            var newState = this.setState({x: this.getState().x - this.speed});
                             return newState;
                             break;
                         case 'RIGHT':
-                            var newState = this._setState({x: this.getState().x + this.speed});
+                            var newState = this.setState({x: this.getState().x + this.speed});
                             return newState;
                             break;
                         case 'UP':
-                            var newState = this._setState({y: this.getState().y - this.speed});
+                            var newState = this.setState({y: this.getState().y - this.speed});
                             return newState;
                             break;
                         case 'DOWN':
-                            var newState = this._setState({y: this.getState().y + this.speed});
+                            var newState = this.setState({y: this.getState().y + this.speed});
                             return newState;
                             break;
                     }
@@ -441,7 +441,7 @@
                     return {type: 'BULLET'}
                 };
 
-                this._setState = function (newStateParam) {
+                this.setState = function (newStateParam) {
                     var newState = Object.assign({}, this.getState(), newStateParam);
                     this._prevState = this._state;
                     this._state = newState;

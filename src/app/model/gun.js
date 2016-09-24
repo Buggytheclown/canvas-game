@@ -5,12 +5,13 @@ export class Gun {
 
     bulletState;
     gunState;
-    inDisplay;
+    gameEngine;
 
-    constructor(inDisplay) {
-        this.inDisplay = inDisplay;
+    constructor(gameEngine, bulletDrawer) {
+        this.bulletDrawer = bulletDrawer;
+        this.gameEngine = gameEngine;
         this.gunState = {framePerBullet: 40, frameToShoot: 0};
-        this.bulletState = {x: null, y: null, h: 3, w: 3, onDirection: null, speed: 10, color: 'red'}
+        this.bulletState = {x: null, y: null, h: 5, w: 8, onDirection: null, speed: 8}
     }
 
     update() {
@@ -23,69 +24,85 @@ export class Gun {
         if (this.gunState.frameToShoot === 0) {
             var bulletState = Object.assign({}, this.bulletState);
             switch (gunnerState.onDirection) {
-                case 'RIGHT':
-                    bulletState.x += this._height;
+                case 'UP':
+                    bulletState.x = gunnerState.x + gunnerState.w / 2;
+                    bulletState.y = gunnerState.y - bulletState.h - 20;
+                    bulletState.onDirection = 'UP';
                     break;
                 case 'DOWN':
-                    bulletState.y += this._height;
+                    bulletState.x = gunnerState.x + gunnerState.w / 2;
+                    bulletState.y = gunnerState.y + gunnerState.h + bulletState.h +20;
+                    bulletState.onDirection = 'DOWN';
+                    break;
+                case 'LEFT':
+                    bulletState.x = gunnerState.x - bulletState.w -20;
+                    bulletState.y = gunnerState.y + gunnerState.h / 2;
+                    bulletState.onDirection = 'LEFT';
+                    break;
+                case 'RIGHT':
+                    bulletState.x = gunnerState.x + gunnerState.w + bulletState.h;
+                    bulletState.y = gunnerState.y + gunnerState.h / 2;
+                    bulletState.onDirection = 'RIGHT';
+                    break;
+                default:
+                    throw new TypeError(`Gun.shoot() expect 'LEFT', 'RIGHT', 'UP', 'DOWN' but got ${gunnerState.onDirection}`);
                     break;
             }
-            var bullet = new Bullet(this.bulletState, this.inDisplay);
-            this.inDisplay.push(bullet);
+            var bullet = new Bullet(this.gameEngine, bulletState, this.bulletDrawer);
+            this.gameEngine.push(bullet);
             this.gunState.frameToShoot = this.gunState.framePerBullet;
         }
     };
 }
 
 
-class Bullet extends AbstractMovable{
+class Bullet extends AbstractMovable {
 
     _state;
     _prevState;
-    inDisplay;
+    gameEngine;
 
-    constructor(state, inDisplay) {
+    constructor(gameEngine, state, drawer) {
         super();
-        this.inDisplay = inDisplay;
+        this.drawer = drawer;
+        this.gameEngine = gameEngine;
+        if(state.onDirection === 'UP' || state.onDirection === 'DOWN'){
+            [state.w, state.h] = [state.h, state.w];
+        }
         this._state = this._prevState = state;
     }
 
-    get state(){
+    get state() {
         return this._state;
     }
 
-
     update() {
-        var newState;
         switch (this.state.onDirection) {
             case 'LEFT':
-                newState = this._setState({x: this.getState().x - this.speed});
-                return newState;
+                this.setState({x: this.state.x - this.state.speed});
                 break;
             case 'RIGHT':
-                newState = this._setState({x: this.getState().x + this.speed});
-                return newState;
+                this.setState({x: this.state.x + this.state.speed});
                 break;
             case 'UP':
-                newState = this._setState({y: this.getState().y - this.speed});
-                return newState;
+                this.setState({y: this.state.y - this.state.speed});
                 break;
             case 'DOWN':
-                newState = this._setState({y: this.getState().y + this.speed});
-                return newState;
+                this.setState({y: this.state.y + this.state.speed});
                 break;
             default:
                 throw new TypeError(`Bullet.update() expect 'LEFT', 'RIGHT', 'UP', 'DOWN' but got ${this.state.onDirection}`);
                 break;
         }
+        return this.state;
     };
 
     getHitBy() {
         return {type: 'BULLET'}
     };
 
-    _setState(newStateParam) {
-        var newState = Object.assign({}, this.getState(), newStateParam);
+    setState(newStateParam) {
+        var newState = Object.assign({}, this.state, newStateParam);
         this._prevState = this._state;
         this._state = newState;
         return newState;
@@ -95,21 +112,19 @@ class Bullet extends AbstractMovable{
         console.log('Bullet was hitten by: ', obj.type)
     };
 
-    rollBack() {
-        console.log('Bullet rollBack!');
-        this.inDisplay.pop(this);
+    rollBack(context) {
+        this.clear(context);
+        this.gameEngine.pop(this);
     };
 
     draw(context) {
         this.clear(context);
-        context.fillStyle = this.color;
-        var coordinates = this.getState();
-        context.fillRect(coordinates.x, coordinates.y, coordinates.h, coordinates.w);
+        this.drawer.draw(context, this.state)
     };
 
     clear(context) {
-        var coordinates = this.getState();
-        context.clearRect(coordinates.x, coordinates.y, coordinates.h, coordinates.w);
+        var coordinates = this._prevState;
+        context.clearRect(coordinates.x, coordinates.y, coordinates.w, coordinates.h);
     };
 
 }
