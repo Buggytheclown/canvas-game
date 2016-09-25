@@ -1,6 +1,7 @@
 export class Keybot {
     currentDirection;
     space;
+    directions;
 
     constructor() {
         this.currentDirection = 'RIGHT';
@@ -18,11 +19,12 @@ export class Keybot {
     }
 
     setRndDirections() {
-        this.currentDirection = this.directions.filter(el=>el !== this.revertDirections(this.currentDirection))[Math.floor(Math.random() * 3)];
+        this.currentDirection = this.directions
+            .filter(el=>el !== this.revertDirections(this.currentDirection))
+            [Math.floor(Math.random() * 3)];
     }
 
     revertDirections(direction) {
-        var newDirection;
         switch (direction) {
             case 'LEFT':
                 return 'RIGHT';

@@ -29,25 +29,7 @@ export class StaticDrawer {
         //     }
         // });
 
-        var imgOnSpriteXYWH_current;
-
-        switch (state.onDirection) {
-            case 'DOWN':
-                imgOnSpriteXYWH_current = this.onSpritePosition.xywh_DOWN;
-                break;
-            case 'UP':
-                imgOnSpriteXYWH_current = this.onSpritePosition.xywh_UP;
-                break;
-            case 'RIGHT':
-                imgOnSpriteXYWH_current = this.onSpritePosition.xywh_RIGHT;
-                break;
-            case 'LEFT':
-                imgOnSpriteXYWH_current = this.onSpritePosition.xywh_LEFT;
-                break;
-            default:
-                throw new TypeError(`Animate expect 'prevState' with 'UP', 'DOWN', 'LEFT', 'RIGHT', 'STOP' attribute, but got ${prevState.onDirection}`);
-                break;
-        }
+        var imgOnSpriteXYWH_current = this.onSpritePosition['xywh_' + state.onDirection];
 
         context.drawImage(this.sprite, ...imgOnSpriteXYWH_current, state.x, state.y, state.w, state.h);
 

@@ -6,10 +6,12 @@ export class Gun {
     bulletState;
     gunState;
     gameEngine;
+    bulletRollBackDrawer;
 
-    constructor(gameEngine, bulletDrawer) {
+    constructor(gameEngine, bulletDrawer, bulletRollBackDrawer) {
         this.bulletDrawer = bulletDrawer;
         this.gameEngine = gameEngine;
+        this.bulletRollBackDrawer = bulletRollBackDrawer;
         this.gunState = {framePerBullet: 40, frameToShoot: 0};
         this.bulletState = {x: null, y: null, h: 5, w: 8, onDirection: null, speed: 8}
     }
@@ -23,32 +25,38 @@ export class Gun {
     shoot(gunnerState) {
         if (this.gunState.frameToShoot === 0) {
             var bulletState = Object.assign({}, this.bulletState);
+            // gunner come first in engine array (
+            var delta = (gunnerState.inMove ? gunnerState.speed : 0) + 1;
             switch (gunnerState.onDirection) {
                 case 'UP':
-                    bulletState.x = gunnerState.x + gunnerState.w / 2;
-                    bulletState.y = gunnerState.y - bulletState.h - 20;
+                    [bulletState.w, bulletState.h] = [bulletState.h, bulletState.w];
+                    bulletState.x = gunnerState.x + gunnerState.w / 2 - bulletState.w/2;
+                    bulletState.y = gunnerState.y - bulletState.h - delta;
                     bulletState.onDirection = 'UP';
                     break;
                 case 'DOWN':
-                    bulletState.x = gunnerState.x + gunnerState.w / 2;
-                    bulletState.y = gunnerState.y + gunnerState.h + bulletState.h +20;
+                    [bulletState.w, bulletState.h] = [bulletState.h, bulletState.w];
+                    bulletState.x = gunnerState.x + gunnerState.w / 2 - bulletState.w/2;
+                    bulletState.y = gunnerState.y + gunnerState.h + delta;
                     bulletState.onDirection = 'DOWN';
                     break;
                 case 'LEFT':
-                    bulletState.x = gunnerState.x - bulletState.w -20;
-                    bulletState.y = gunnerState.y + gunnerState.h / 2;
+                    bulletState.x = gunnerState.x - bulletState.w - delta;
+                    bulletState.y = gunnerState.y + gunnerState.h / 2 - bulletState.h/2;
                     bulletState.onDirection = 'LEFT';
                     break;
                 case 'RIGHT':
-                    bulletState.x = gunnerState.x + gunnerState.w + bulletState.h;
-                    bulletState.y = gunnerState.y + gunnerState.h / 2;
+                    bulletState.x = gunnerState.x + gunnerState.w + delta;
+                    bulletState.y = gunnerState.y + gunnerState.h / 2 - bulletState.h/2;
                     bulletState.onDirection = 'RIGHT';
                     break;
                 default:
                     throw new TypeError(`Gun.shoot() expect 'LEFT', 'RIGHT', 'UP', 'DOWN' but got ${gunnerState.onDirection}`);
                     break;
             }
-            var bullet = new Bullet(this.gameEngine, bulletState, this.bulletDrawer);
+            bulletState.x = Math.round(bulletState.x);
+            bulletState.y = Math.round(bulletState.y);
+            var bullet = new Bullet(this.gameEngine, bulletState, this.bulletDrawer, this.bulletRollBackDrawer);
             this.gameEngine.push(bullet);
             this.gunState.frameToShoot = this.gunState.framePerBullet;
         }
@@ -61,14 +69,14 @@ class Bullet extends AbstractMovable {
     _state;
     _prevState;
     gameEngine;
+    rollBackDrawer;
 
-    constructor(gameEngine, state, drawer) {
+    constructor(gameEngine, state, drawer, rollBackDrawer) {
         super();
+        this.updDescription({type: 'BULLET'});
         this.drawer = drawer;
         this.gameEngine = gameEngine;
-        if(state.onDirection === 'UP' || state.onDirection === 'DOWN'){
-            [state.w, state.h] = [state.h, state.w];
-        }
+        this.rollBackDrawer = rollBackDrawer;
         this._state = this._prevState = state;
     }
 
@@ -98,14 +106,13 @@ class Bullet extends AbstractMovable {
     };
 
     getHitBy() {
-        return {type: 'BULLET'}
+        return null;
     };
 
     setState(newStateParam) {
         var newState = Object.assign({}, this.state, newStateParam);
         this._prevState = this._state;
         this._state = newState;
-        return newState;
     };
 
     hit(obj) {
@@ -114,6 +121,8 @@ class Bullet extends AbstractMovable {
 
     rollBack(context) {
         this.clear(context);
+        // TODO type: BULLET - crutch!
+        this.rollBackDrawer.hit({type:'BULLET'}, Object.assign({}, this.state));
         this.gameEngine.pop(this);
     };
 

@@ -1,12 +1,14 @@
 import {GameEngine} from "./gameEngine";
 import {Tank} from "./model/tank";
 import {Wall} from "./model/wall";
-import {keyboard1} from "./keyboard1";
-import {Keybot} from "./keybot";
-import {DynamicDrawer} from "./model/dynamicDrawer";
+import {keyboard1} from "./control/keyboard1";
+import {Keybot} from "./control/keybot";
+import {DynamicDrawer} from "./drawers/dynamicDrawer";
 import {Gun} from "./model/gun";
-import {keyboard2} from "./keyboard2";
-import {StaticDrawer} from "./model/staticDrawer";
+import {keyboard2} from "./control/keyboard2";
+import {StaticDrawer} from "./drawers/staticDrawer";
+import {OnHitWall} from "./factory/onHitWall";
+import {StaticOnStageDrawer} from "./drawers/staticOnStageDrawer";
 
 
 class Main {
@@ -40,7 +42,7 @@ class Main {
             new Tank({
                 gameEngine: this.gameEngine,
                 driver: keyboard1(),
-                gun: new Gun(this.gameEngine, new StaticDrawer({spritePromise})),
+                gun: new Gun(this.gameEngine, new StaticDrawer({spritePromise}), new OnHitWall(this.gameEngine, spritePromise)),
                 drawer: new DynamicDrawer({
                     spritePromise: spritePromise,
                     onSpriteType: 1
@@ -52,7 +54,7 @@ class Main {
             new Tank({
                 gameEngine: this.gameEngine,
                 driver: keyboard2(),
-                gun: new Gun(this.gameEngine, new StaticDrawer({spritePromise})),
+                gun: new Gun(this.gameEngine, new StaticDrawer({spritePromise}), new OnHitWall(this.gameEngine, spritePromise)),
                 drawer: new DynamicDrawer({
                     spritePromise: spritePromise,
                     onSpriteType: 1
@@ -60,52 +62,128 @@ class Main {
                 state: {x: 190, y: 400, w: 30, h: 30, speed: 5}
             }));
 
-        this.gameEngine.push(new Wall(this.gameEngine, {x: 300, y: 100, w: 8, h: 200}, 'grey'));
+        this.gameEngine.push(
+            new Wall({
+                gameEngine: this.gameEngine,
+                state: {x: 300, y: 100, w: 40, h: 40},
+                drawer: new StaticOnStageDrawer({spritePromise}),
+            })
+        );
+        this.gameEngine.push(
+            new Wall({
+                gameEngine: this.gameEngine,
+                state: {x: 340, y: 100, w: 40, h: 40},
+                drawer: new StaticOnStageDrawer({spritePromise}),
+            })
+        );
+        this.gameEngine.push(
+            new Wall({
+                gameEngine: this.gameEngine,
+                state: {x: 300, y: 140, w: 40, h: 40},
+                drawer: new StaticOnStageDrawer({spritePromise}),
+            })
+        );
+        this.gameEngine.push(
+            new Wall({
+                gameEngine: this.gameEngine,
+                state: {x: 340, y: 140, w: 40, h: 40},
+                drawer: new StaticOnStageDrawer({spritePromise}),
+            })
+        );
+
 
         this.gameEngine.push(
-            new Tank({
+            new Wall({
                 gameEngine: this.gameEngine,
-                driver: new Keybot(),
-                gun: new Gun(this.gameEngine, new StaticDrawer({spritePromise})),
-                drawer: new DynamicDrawer({
-                    spritePromise: spritePromise,
-                    onSpriteType: 0
-                }),
-                state: {x: 200, y: 200, w: 30, h: 30, speed: 1}
-            }));
+                state: {x: 300, y: 280, w: 40, h: 40},
+                drawer: new StaticOnStageDrawer({spritePromise}),
+            })
+        );
         this.gameEngine.push(
-            new Tank({
+            new Wall({
                 gameEngine: this.gameEngine,
-                driver: new Keybot(),
-                gun: new Gun(this.gameEngine, new StaticDrawer({spritePromise})),
-                drawer: new DynamicDrawer({
-                    spritePromise: spritePromise,
-                    onSpriteType: 0
-                }),
-                state: {x: 150, y: 250, w: 30, h: 30, speed: 2}
-            }));
+                state: {x: 340, y: 280, w: 40, h: 40},
+                drawer: new StaticOnStageDrawer({spritePromise}),
+            })
+        );
+
+
         this.gameEngine.push(
-            new Tank({
+            new Wall({
                 gameEngine: this.gameEngine,
-                driver: new Keybot(),
-                gun: new Gun(this.gameEngine, new StaticDrawer({spritePromise})),
-                drawer: new DynamicDrawer({
-                    spritePromise: spritePromise,
-                    onSpriteType: 0
-                }),
-                state: {x: 450, y: 250, w: 30, h: 30, speed: 3}
-            }));
+                state: {x: 300, y: 500, w: 40, h: 40},
+                drawer: new StaticOnStageDrawer({spritePromise}),
+            })
+        );
         this.gameEngine.push(
-            new Tank({
+            new Wall({
                 gameEngine: this.gameEngine,
-                driver: new Keybot(),
-                gun: new Gun(this.gameEngine, new StaticDrawer({spritePromise})),
-                drawer: new DynamicDrawer({
-                    spritePromise: spritePromise,
-                    onSpriteType: 0
-                }),
-                state: {x: 550, y: 250, w: 30, h: 30, speed: 4}
-            }));
+                state: {x: 340, y: 500, w: 40, h: 40},
+                drawer: new StaticOnStageDrawer({spritePromise}),
+            })
+        );
+        this.gameEngine.push(
+            new Wall({
+                gameEngine: this.gameEngine,
+                state: {x: 300, y: 540, w: 40, h: 40},
+                drawer: new StaticOnStageDrawer({spritePromise}),
+            })
+        );
+        this.gameEngine.push(
+            new Wall({
+                gameEngine: this.gameEngine,
+                state: {x: 340, y: 540, w: 40, h: 40},
+                drawer: new StaticOnStageDrawer({spritePromise}),
+            })
+        );
+
+
+        if (1) {
+            this.gameEngine.push(
+                new Tank({
+                    gameEngine: this.gameEngine,
+                    driver: new Keybot(),
+                    gun: new Gun(this.gameEngine, new StaticDrawer({spritePromise}), new OnHitWall(this.gameEngine, spritePromise)),
+                    drawer: new DynamicDrawer({
+                        spritePromise: spritePromise,
+                        onSpriteType: 0
+                    }),
+                    state: {x: 200, y: 200, w: 30, h: 30, speed: 1}
+                }));
+            this.gameEngine.push(
+                new Tank({
+                    gameEngine: this.gameEngine,
+                    driver: new Keybot(),
+                    gun: new Gun(this.gameEngine, new StaticDrawer({spritePromise}), new OnHitWall(this.gameEngine, spritePromise)),
+                    drawer: new DynamicDrawer({
+                        spritePromise: spritePromise,
+                        onSpriteType: 0
+                    }),
+                    state: {x: 150, y: 250, w: 30, h: 30, speed: 2}
+                }));
+            this.gameEngine.push(
+                new Tank({
+                    gameEngine: this.gameEngine,
+                    driver: new Keybot(),
+                    gun: new Gun(this.gameEngine, new StaticDrawer({spritePromise}), new OnHitWall(this.gameEngine, spritePromise)),
+                    drawer: new DynamicDrawer({
+                        spritePromise: spritePromise,
+                        onSpriteType: 0
+                    }),
+                    state: {x: 450, y: 250, w: 30, h: 30, speed: 3}
+                }));
+            this.gameEngine.push(
+                new Tank({
+                    gameEngine: this.gameEngine,
+                    driver: new Keybot(),
+                    gun: new Gun(this.gameEngine, new StaticDrawer({spritePromise}), new OnHitWall(this.gameEngine, spritePromise)),
+                    drawer: new DynamicDrawer({
+                        spritePromise: spritePromise,
+                        onSpriteType: 0
+                    }),
+                    state: {x: 550, y: 250, w: 30, h: 30, speed: 4}
+                }));
+        }
 
         return Promise.all([spritePromise]);
     }
