@@ -2,28 +2,26 @@ import {AbstractUnmovable} from "./abstractUnmovable";
 
 export class Wall extends AbstractUnmovable {
     state;
-    gameEngine;
     drawer;
 
-    constructor({gameEngine, state, drawer}) {
+    constructor({state, drawer}) {
         super();
         this.state = Object.assign(state, {onStage: 0});
         this.drawer = drawer;
-        this.gameEngine = gameEngine;
     }
 
-    hit(obj, coordinates) {
+    hit(gameEngine, obj) {
         if (obj.type === 'BULLET') {
             if (this.state.onStage === 3) {
-                this.gameEngine.pop(this);
+                gameEngine.pop(this);
             } else {
                 this.state.onStage++;
             }
         }
     };
 
-    draw(context) {
-        this.drawer.draw(context, this.state)
+    draw(gameEngine) {
+        this.drawer.draw(gameEngine, this.state)
     };
 
 }

@@ -9,6 +9,8 @@ import {keyboard2} from "./drivers/keyboard2";
 import {StaticDrawer} from "./drawers/staticDrawer";
 import {BoomAnimate} from "./factory/boomAnimate";
 import {StaticOnStageDrawer} from "./drawers/staticOnStageDrawer";
+import {tankFactory} from "./factory/tankFactory";
+import {wallFactory} from "./factory/wallFactory";
 
 
 class Main {
@@ -37,153 +39,47 @@ class Main {
                 resolve(mainSprite);
             };
         });
+        var map1 = [
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 'UNKN', 'UNKN', 'UNKN', 'UNKN', 'UNKN', 0, 0, 'UNKN', 'UNKN', 'UNKN', 0, 0, 'UNKN', 'UNKN', 'UNKN', 'UNKN', 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            ['BROWN', 'BROWN', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'BROWN', 'BROWN'],
+            ['BROWN', 'BROWN', 0, 0, 0, 0, 'GREY', 'GREY', 'GREY', 'GREY', 'GREY', 'GREY', 'GREY', 'GREY', 'GREY', 0, 0, 0, 'BROWN', 'BROWN'],
+            ['BROWN', 'BROWN', 0, 0, 0, 0, 'GREY', 'GREY', 'GREY', 'GREY', 'GREY', 'GREY', 'GREY', 'GREY', 'GREY', 0, 0, 0, 'BROWN', 'BROWN'],
+            ['BROWN', 'BROWN', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'BROWN', 'BROWN'],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 'WHITE', 'WHITE', 'WHITE', 'WHITE', 'WHITE', 0, 0, 'WHITE', 'WHITE', 'WHITE', 0, 0, 'WHITE', 'WHITE', 'WHITE', 'WHITE', 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, , 0, 'EAGL', 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        ];
+        map1.forEach((row, irow)=>row.forEach((col, icol)=> {
+            if (col) {
+                this.gameEngine.push(wallFactory({type: col, inBlock: [icol, irow], spritePromise}));
+            }
+        }));
 
-        this.gameEngine.push(
-            new Tank({
-                gameEngine: this.gameEngine,
-                driver: keyboard1(),
-                gun: new Gun(this.gameEngine, new StaticDrawer({spritePromise}), new BoomAnimate(this.gameEngine, spritePromise)),
-                drawer: new DynamicDrawer({
-                    spritePromise: spritePromise,
-                    onSpriteType: 1
-                }),
-                state: {x: 100, y: 400, w: 30, h: 30, speed: 5}
-            }));
-
-        this.gameEngine.push(
-            new Tank({
-                gameEngine: this.gameEngine,
-                driver: keyboard2(),
-                gun: new Gun(this.gameEngine, new StaticDrawer({spritePromise}), new BoomAnimate(this.gameEngine, spritePromise)),
-                drawer: new DynamicDrawer({
-                    spritePromise: spritePromise,
-                    onSpriteType: 1
-                }),
-                state: {x: 190, y: 400, w: 30, h: 30, speed: 5}
-            }));
-
-        this.gameEngine.push(
-            new Wall({
-                gameEngine: this.gameEngine,
-                state: {x: 300, y: 100, w: 40, h: 40},
-                drawer: new StaticOnStageDrawer({spritePromise}),
-            })
-        );
-        this.gameEngine.push(
-            new Wall({
-                gameEngine: this.gameEngine,
-                state: {x: 340, y: 100, w: 40, h: 40},
-                drawer: new StaticOnStageDrawer({spritePromise}),
-            })
-        );
-        this.gameEngine.push(
-            new Wall({
-                gameEngine: this.gameEngine,
-                state: {x: 300, y: 140, w: 40, h: 40},
-                drawer: new StaticOnStageDrawer({spritePromise}),
-            })
-        );
-        this.gameEngine.push(
-            new Wall({
-                gameEngine: this.gameEngine,
-                state: {x: 340, y: 140, w: 40, h: 40},
-                drawer: new StaticOnStageDrawer({spritePromise}),
-            })
-        );
+            [
+            tankFactory({type: 'B', inBlock: [5, 13], driverType: 'PLAYER1', spritePromise}),
+            tankFactory({type: 'B', inBlock: [15, 13], driverType: 'PLAYER2', spritePromise})
 
 
-        this.gameEngine.push(
-            new Wall({
-                gameEngine: this.gameEngine,
-                state: {x: 300, y: 280, w: 40, h: 40},
-                drawer: new StaticOnStageDrawer({spritePromise}),
-            })
-        );
-        this.gameEngine.push(
-            new Wall({
-                gameEngine: this.gameEngine,
-                state: {x: 340, y: 280, w: 40, h: 40},
-                drawer: new StaticOnStageDrawer({spritePromise}),
-            })
-        );
-
-
-        this.gameEngine.push(
-            new Wall({
-                gameEngine: this.gameEngine,
-                state: {x: 300, y: 500, w: 40, h: 40},
-                drawer: new StaticOnStageDrawer({spritePromise}),
-            })
-        );
-        this.gameEngine.push(
-            new Wall({
-                gameEngine: this.gameEngine,
-                state: {x: 340, y: 500, w: 40, h: 40},
-                drawer: new StaticOnStageDrawer({spritePromise}),
-            })
-        );
-        this.gameEngine.push(
-            new Wall({
-                gameEngine: this.gameEngine,
-                state: {x: 300, y: 540, w: 40, h: 40},
-                drawer: new StaticOnStageDrawer({spritePromise}),
-            })
-        );
-        this.gameEngine.push(
-            new Wall({
-                gameEngine: this.gameEngine,
-                state: {x: 340, y: 540, w: 40, h: 40},
-                drawer: new StaticOnStageDrawer({spritePromise}),
-            })
-        );
-
+            ].forEach(el=>this.gameEngine.push(el));
 
         if (1) {
-            this.gameEngine.push(
-                new Tank({
-                    gameEngine: this.gameEngine,
-                    driver: new Keybot(),
-                    gun: new Gun(this.gameEngine, new StaticDrawer({spritePromise}), new BoomAnimate(this.gameEngine, spritePromise)),
-                    drawer: new DynamicDrawer({
-                        spritePromise: spritePromise,
-                        onSpriteType: 0
-                    }),
-                    state: {x: 200, y: 200, w: 30, h: 30, speed: 1}
-                }));
-            this.gameEngine.push(
-                new Tank({
-                    gameEngine: this.gameEngine,
-                    driver: new Keybot(),
-                    gun: new Gun(this.gameEngine, new StaticDrawer({spritePromise}), new BoomAnimate(this.gameEngine, spritePromise)),
-                    drawer: new DynamicDrawer({
-                        spritePromise: spritePromise,
-                        onSpriteType: 0
-                    }),
-                    state: {x: 150, y: 250, w: 30, h: 30, speed: 2}
-                }));
-            this.gameEngine.push(
-                new Tank({
-                    gameEngine: this.gameEngine,
-                    driver: new Keybot(),
-                    gun: new Gun(this.gameEngine, new StaticDrawer({spritePromise}), new BoomAnimate(this.gameEngine, spritePromise)),
-                    drawer: new DynamicDrawer({
-                        spritePromise: spritePromise,
-                        onSpriteType: 0
-                    }),
-                    state: {x: 450, y: 250, w: 30, h: 30, speed: 3}
-                }));
-            this.gameEngine.push(
-                new Tank({
-                    gameEngine: this.gameEngine,
-                    driver: new Keybot(),
-                    gun: new Gun(this.gameEngine, new StaticDrawer({spritePromise}), new BoomAnimate(this.gameEngine, spritePromise)),
-                    drawer: new DynamicDrawer({
-                        spritePromise: spritePromise,
-                        onSpriteType: 0
-                    }),
-                    state: {x: 550, y: 250, w: 30, h: 30, speed: 4}
-                }));
+            [
+                tankFactory({type: 'B', inBlock: [5, 1], driverType: 'BOT', spritePromise}),
+                tankFactory({type: 'C', inBlock: [10, 1], driverType: 'BOT', spritePromise}),
+                tankFactory({type: 'D', inBlock: [15, 1], driverType: 'BOT', spritePromise}),
+                tankFactory({type: 'D', inBlock: [5, 2], driverType: 'BOT', spritePromise}),
+                tankFactory({type: 'C', inBlock: [10, 2], driverType: 'BOT', spritePromise}),
+                tankFactory({type: 'B', inBlock: [15, 2], driverType: 'BOT', spritePromise})
+            ].forEach(el=>this.gameEngine.push(el));
         }
+
 
         return Promise.all([spritePromise]);
     }

@@ -24,16 +24,16 @@ export class GameEngine {
     };
 
     draw() {
-        this._stack.forEach(el => el.draw(this.context))
+        this._stack.forEach(el => el.draw(this))
     };
 
-    clear() {
-        this._stack.forEach(el => el.clear(this.context))
-    };
+    // clear() {
+    //     this._stack.forEach(el => el.clear(this.context))
+    // };
 
     update() {
         this._stack.forEach(elUpdated => {
-            var elUpdatedState = elUpdated.update(this.context);
+            var elUpdatedState = elUpdated.update(this);
 
             if (elUpdatedState) {
                 var elUpdatedCoordinates = this._calcCorners(elUpdatedState);
@@ -45,14 +45,14 @@ export class GameEngine {
 
                             if (this._intersection(elUpdatedCoordinates, coordinatesStackEl)) {
                                 // pass the copy, due to elUpdated can be destroyed or it state can be modified (
-                                stackEl.hit(Object.assign({}, elUpdated.description), Object.assign({}, elUpdatedState));
-                                elUpdated.rollBack(this.context);
+                                stackEl.hit(this, Object.assign({}, elUpdated.description), Object.assign({}, elUpdatedState));
+                                elUpdated.rollBack(this);
                             }
                         }
 
                     })
                 } else {
-                    elUpdated.rollBack(this.context);
+                    elUpdated.rollBack(this);
 
                     // CONTER LOGIC
                     // if (!elUpdated.state.outDisplaylap) {

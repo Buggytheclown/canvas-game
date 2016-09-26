@@ -8,28 +8,26 @@ export class Tank extends AbstractMovable {
     driver;
     gun;
 
-    constructor({gameEngine, driver, drawer, state, gun}) {
+    constructor({driver, drawer, state, gun, rollBackDrawer}) {
         super();
+        this.updDescription({type: 'TANK'});
         this.prevState = this.state = {...state, ...{onDirection: 'RIGHT', inMove: true}};
+        this.rollBackDrawer = rollBackDrawer;
         this.driver = driver;
         this.drawer = drawer;
         this.gun = gun;
     }
 
-    draw(context) {
-        if (this._stateChanged) {
-            this.drawer.draw(context, this.state);
-            this._stateChanged = false;
+    draw(gameEngine) {
+        this.drawer.draw(gameEngine, this.state);
+    };
+
+
+    hit(gameEngine, obj) {
+        if(obj.type === 'BULLET' && obj.owner !== this.state.owner){
+            this.rollBackDrawer.draw(gameEngine, Object.assign({}, this.state));
+            gameEngine.pop(this);
         }
-    };
-
-
-    hit(obj) {
-        console.log('Tank was hitten by: ', obj.type);
-    };
-
-    getHitBy() {
-        return {type: 'TANK'};
     };
 
     rollBack() {
@@ -40,10 +38,9 @@ export class Tank extends AbstractMovable {
     setState(newStateParam) {
         this.prevState = this.state;
         this.state = Object.assign({}, this.state, newStateParam);
-        this._stateChanged = true;
     };
 
-    update() {
+    update(gameEngine) {
         this.gun.update();
 
         if (this.driver.left) {
@@ -64,7 +61,7 @@ export class Tank extends AbstractMovable {
 
 
         if (this.driver.space) {
-            this.gun.shoot({...this.state, ...{onDirection: this.prevState.onDirection}});
+            this.gun.shoot(gameEngine, Object.assign({}, this.state, {onDirection: this.prevState.onDirection}));
         }
 
         return this.state;

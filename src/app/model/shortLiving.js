@@ -6,18 +6,13 @@ export class ShortLiving extends AbstractMovable {
     frameLength;
     drawer;
 
-    constructor(gameEngine, state, drawer) {
+    constructor(state, drawer) {
         super();
-        this.gameEngine=gameEngine;
         this.updDescription({haveHitBox: false});
         this.drawer = drawer;
         this.state = state;
         this.frameLength = 30;
         this.onFrame = 0;
-    }
-
-    getHitBy() {
-        return null;
     }
 
     rollBack() {
@@ -28,17 +23,17 @@ export class ShortLiving extends AbstractMovable {
         return null;
     }
 
-    update(context) {
+    update(gameEngine) {
         if (this.onFrame < this.frameLength) {
             this.onFrame++;
         } else {
-            this.gameEngine.pop(this);
+            gameEngine.pop(this);
         }
         return null;
     };
 
-    draw(context) {
-        this.drawer.draw(context, this.state, this.onFrame/this.frameLength);
+    draw(gameEngine) {
+        this.drawer.draw(gameEngine, this.state, this.onFrame/this.frameLength);
     };
 
 }

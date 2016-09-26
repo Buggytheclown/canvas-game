@@ -3,17 +3,11 @@ import {AbstractMovable} from "./abstractMovable";
 
 export class Gun {
 
-    bulletState;
-    gunState;
-    gameEngine;
-    bulletRollBackDrawer;
-
-    constructor(gameEngine, bulletDrawer, bulletRollBackDrawer) {
+    constructor(bulletDrawer, bulletRollBackDrawer, speed) {
         this.bulletDrawer = bulletDrawer;
-        this.gameEngine = gameEngine;
         this.bulletRollBackDrawer = bulletRollBackDrawer;
         this.gunState = {framePerBullet: 40, frameToShoot: 0};
-        this.bulletState = {x: null, y: null, h: 5, w: 8, onDirection: null, speed: 8}
+        this.bulletState = {x: null, y: null, h: 5, w: 8, onDirection: null, speed: speed}
     }
 
     update() {
@@ -22,7 +16,7 @@ export class Gun {
         }
     };
 
-    shoot(gunnerState) {
+    shoot(gameEngine, gunnerState) {
         if (this.gunState.frameToShoot === 0) {
             var bulletState = Object.assign({}, this.bulletState);
             // gunner come first in engine array (
@@ -56,8 +50,8 @@ export class Gun {
             }
             bulletState.x = Math.round(bulletState.x);
             bulletState.y = Math.round(bulletState.y);
-            var bullet = new Bullet(this.gameEngine, bulletState, this.bulletDrawer, this.bulletRollBackDrawer);
-            this.gameEngine.push(bullet);
+            var bullet = new Bullet(bulletState, this.bulletDrawer, this.bulletRollBackDrawer, gunnerState.owner);
+            gameEngine.push(bullet);
             this.gunState.frameToShoot = this.gunState.framePerBullet;
         }
     };
@@ -68,14 +62,12 @@ class Bullet extends AbstractMovable {
 
     _state;
     _prevState;
-    gameEngine;
     rollBackDrawer;
 
-    constructor(gameEngine, state, drawer, rollBackDrawer) {
+    constructor(state, drawer, rollBackDrawer, owner) {
         super();
-        this.updDescription({type: 'BULLET'});
+        this.updDescription({type: 'BULLET', owner});
         this.drawer = drawer;
-        this.gameEngine = gameEngine;
         this.rollBackDrawer = rollBackDrawer;
         this._state = this._prevState = state;
     }
@@ -105,27 +97,23 @@ class Bullet extends AbstractMovable {
         return this.state;
     };
 
-    getHitBy() {
-        return null;
-    };
-
     setState(newStateParam) {
         var newState = Object.assign({}, this.state, newStateParam);
         this._prevState = this._state;
         this._state = newState;
     };
 
-    hit(obj) {
-        this.gameEngine.pop(this);
+    hit(gameEngine) {
+        gameEngine.pop(this);
     };
 
-    rollBack(context) {
-        this.rollBackDrawer.draw(Object.assign({}, this.state));
-        this.gameEngine.pop(this);
+    rollBack(gameEngine) {
+        this.rollBackDrawer.draw(gameEngine, Object.assign({}, this.state));
+        gameEngine.pop(this);
     };
 
-    draw(context) {
-        this.drawer.draw(context, this.state)
+    draw(gameEngine) {
+        this.drawer.draw(gameEngine, this.state)
     };
 
 }

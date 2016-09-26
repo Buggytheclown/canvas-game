@@ -2,7 +2,8 @@ export class AbstractModel {
     constructor() {
         this.description = {
             type: '',
-            haveHitBox: true
+            haveHitBox: true,
+            owner: ''
         };
     }
 

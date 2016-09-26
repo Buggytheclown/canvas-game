@@ -38,7 +38,7 @@ export class DynamicDrawer {
         spritePromise.then(img=>this.sprite = img)
     }
 
-    draw(context, state) {
+    draw(gameEngine, state) {
         // ['speed', 'x', 'y', 'h', 'w'].forEach(el => {
         //     if (state[el] === undefined) {
         //         throw new TypeError(`DynamicDrawer.draw() expect '${el}' parameter will be defined!`);
@@ -92,7 +92,7 @@ export class DynamicDrawer {
             }
         }
 
-        context.drawImage(this.sprite, ...imgOnSpriteXYWH_current, state.x, state.y, state.w, state.h);
+        gameEngine.context.drawImage(this.sprite, ...imgOnSpriteXYWH_current, state.x, state.y, state.w, state.h);
 
         if (this.currentTick % this.tickPerFrame === 0) {
             this.onImgStep === 6 ? this.onImgStep = 0 : this.onImgStep++;

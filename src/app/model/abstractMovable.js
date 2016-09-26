@@ -4,7 +4,7 @@ import {AbstractModel} from "./abstractModel";
 export class AbstractMovable extends AbstractModel{
     constructor() {
         super();
-        ['draw', 'hit', 'getHitBy', 'rollBack', 'update']
+        ['draw', 'hit', 'rollBack', 'update']
             .forEach(el => {
                     if (this[el] === undefined) {
                         throw new TypeError(`AbstractMovable model must overwrite '${el}' method`)
