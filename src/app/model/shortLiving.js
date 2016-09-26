@@ -33,19 +33,12 @@ export class ShortLiving extends AbstractMovable {
             this.onFrame++;
         } else {
             this.gameEngine.pop(this);
-            this.clear(context);
         }
         return null;
     };
 
     draw(context) {
-        this.clear(context);
         this.drawer.draw(context, this.state, this.onFrame/this.frameLength);
     };
-
-    clear(context) {
-        context.clearRect(this.state.x, this.state.y, this.state.w, this.state.h);
-    };
-
 
 }

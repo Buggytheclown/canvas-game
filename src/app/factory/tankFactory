@@ -1,0 +1,45 @@
+import {keyboard1} from "../drivers/keyboard1";
+import {keyboard2} from "../drivers/keyboard2";
+import {Keybot} from "../drivers/keybot";
+
+export function TankFactory({type, inBlock, driverType, gameEngine}) {
+    var driver;
+    switch (driverType){
+        case 'PLAYER1':
+            driver = keyboard1();
+            break;
+        case 'PLAYER2':
+            driver = keyboard2();
+            break;
+        case 'BOT':
+            driver = new Keybot();
+            break;
+        default:
+            throw new TypeError(`TankFactory got unexpected 'driverType': ${driverType}`);
+            break;
+    }
+    switch (type){
+        case 'A':
+            break;
+        case 'B':
+            break;
+        case 'C':
+            break;
+        case 'D':
+            break;
+        default:
+            throw new TypeError(`TankFactory got unexpected 'type': ${type}`);
+            break;
+    }
+
+    return new Tank({
+        gameEngine,
+            driver,
+            gun: new Gun(this.gameEngine, new StaticDrawer({spritePromise}), new BoomAnimate(this.gameEngine, spritePromise)),
+            drawer: new DynamicDrawer({
+                spritePromise: spritePromise,
+                onSpriteType: 1
+            }),
+            state: {x: 100, y: 400, w: 30, h: 30, speed: 5}
+        });
+}

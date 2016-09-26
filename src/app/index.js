@@ -1,13 +1,13 @@
 import {GameEngine} from "./gameEngine";
 import {Tank} from "./model/tank";
 import {Wall} from "./model/wall";
-import {keyboard1} from "./control/keyboard1";
-import {Keybot} from "./control/keybot";
+import {keyboard1} from "./drivers/keyboard1";
+import {Keybot} from "./drivers/keybot";
 import {DynamicDrawer} from "./drawers/dynamicDrawer";
 import {Gun} from "./model/gun";
-import {keyboard2} from "./control/keyboard2";
+import {keyboard2} from "./drivers/keyboard2";
 import {StaticDrawer} from "./drawers/staticDrawer";
-import {OnHitWall} from "./factory/onHitWall";
+import {BoomAnimate} from "./factory/boomAnimate";
 import {StaticOnStageDrawer} from "./drawers/staticOnStageDrawer";
 
 
@@ -42,7 +42,7 @@ class Main {
             new Tank({
                 gameEngine: this.gameEngine,
                 driver: keyboard1(),
-                gun: new Gun(this.gameEngine, new StaticDrawer({spritePromise}), new OnHitWall(this.gameEngine, spritePromise)),
+                gun: new Gun(this.gameEngine, new StaticDrawer({spritePromise}), new BoomAnimate(this.gameEngine, spritePromise)),
                 drawer: new DynamicDrawer({
                     spritePromise: spritePromise,
                     onSpriteType: 1
@@ -54,7 +54,7 @@ class Main {
             new Tank({
                 gameEngine: this.gameEngine,
                 driver: keyboard2(),
-                gun: new Gun(this.gameEngine, new StaticDrawer({spritePromise}), new OnHitWall(this.gameEngine, spritePromise)),
+                gun: new Gun(this.gameEngine, new StaticDrawer({spritePromise}), new BoomAnimate(this.gameEngine, spritePromise)),
                 drawer: new DynamicDrawer({
                     spritePromise: spritePromise,
                     onSpriteType: 1
@@ -143,7 +143,7 @@ class Main {
                 new Tank({
                     gameEngine: this.gameEngine,
                     driver: new Keybot(),
-                    gun: new Gun(this.gameEngine, new StaticDrawer({spritePromise}), new OnHitWall(this.gameEngine, spritePromise)),
+                    gun: new Gun(this.gameEngine, new StaticDrawer({spritePromise}), new BoomAnimate(this.gameEngine, spritePromise)),
                     drawer: new DynamicDrawer({
                         spritePromise: spritePromise,
                         onSpriteType: 0
@@ -154,7 +154,7 @@ class Main {
                 new Tank({
                     gameEngine: this.gameEngine,
                     driver: new Keybot(),
-                    gun: new Gun(this.gameEngine, new StaticDrawer({spritePromise}), new OnHitWall(this.gameEngine, spritePromise)),
+                    gun: new Gun(this.gameEngine, new StaticDrawer({spritePromise}), new BoomAnimate(this.gameEngine, spritePromise)),
                     drawer: new DynamicDrawer({
                         spritePromise: spritePromise,
                         onSpriteType: 0
@@ -165,7 +165,7 @@ class Main {
                 new Tank({
                     gameEngine: this.gameEngine,
                     driver: new Keybot(),
-                    gun: new Gun(this.gameEngine, new StaticDrawer({spritePromise}), new OnHitWall(this.gameEngine, spritePromise)),
+                    gun: new Gun(this.gameEngine, new StaticDrawer({spritePromise}), new BoomAnimate(this.gameEngine, spritePromise)),
                     drawer: new DynamicDrawer({
                         spritePromise: spritePromise,
                         onSpriteType: 0
@@ -176,7 +176,7 @@ class Main {
                 new Tank({
                     gameEngine: this.gameEngine,
                     driver: new Keybot(),
-                    gun: new Gun(this.gameEngine, new StaticDrawer({spritePromise}), new OnHitWall(this.gameEngine, spritePromise)),
+                    gun: new Gun(this.gameEngine, new StaticDrawer({spritePromise}), new BoomAnimate(this.gameEngine, spritePromise)),
                     drawer: new DynamicDrawer({
                         spritePromise: spritePromise,
                         onSpriteType: 0
@@ -190,6 +190,7 @@ class Main {
 
     mainLoop() {
         if (window.playGame) {
+            this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
             this.gameEngine.update();
             this.gameEngine.draw();
         }

@@ -18,15 +18,11 @@ export class Tank extends AbstractMovable {
 
     draw(context) {
         if (this._stateChanged) {
-            this.clear(context);
             this.drawer.draw(context, this.state);
             this._stateChanged = false;
         }
     };
 
-    clear(context) {
-        context.clearRect(this.prevState.x, this.prevState.y, this.prevState.w, this.prevState.h);
-    };
 
     hit(obj) {
         console.log('Tank was hitten by: ', obj.type);

@@ -39,13 +39,12 @@ export class GameEngine {
                 var elUpdatedCoordinates = this._calcCorners(elUpdatedState);
                 if (this._isElementInDisplay(elUpdatedCoordinates)) {
                     this._stack.forEach(stackEl=> {
-                        // if stackEl not the same as elUpdated and have hitBox (have state)
+                        // if stackEl not the same as elUpdated and have hitBox
                         if (stackEl.description.haveHitBox && stackEl.state !== elUpdated.state) {
                             var coordinatesStackEl = this._calcCorners(stackEl.state);
 
                             if (this._intersection(elUpdatedCoordinates, coordinatesStackEl)) {
                                 // pass the copy, due to elUpdated can be destroyed or it state can be modified (
-                                // TODO getHitBY to description!
                                 stackEl.hit(Object.assign({}, elUpdated.description), Object.assign({}, elUpdatedState));
                                 elUpdated.rollBack(this.context);
                             }
@@ -53,35 +52,35 @@ export class GameEngine {
 
                     })
                 } else {
-                    // elUpdated.rollBack(this.context);
+                    elUpdated.rollBack(this.context);
 
-
-                    if (!elUpdated.state.outDisplaylap) {
-                        var delta = 1;
-                        switch (elUpdated.state.onDirection) {
-                            case 'RIGHT':
-                                elUpdated.state.x = delta;
-                                break;
-                            case 'DOWN':
-                                elUpdated.state.y = delta;
-                                break;
-                            case 'LEFT':
-                                elUpdated.state.x = this.displaySize.right - elUpdated.state.w - delta;
-                                break;
-                            case 'UP':
-                                elUpdated.state.y = this.displaySize.bottom - elUpdated.state.h - delta;
-                                break;
-                            default:
-                                throw new TypeError(`GameEngine.update() for !_isElementInDisplay expect properly onDirection case, but got ${elUpdated.onDirection}`);
-                                break;
-                        }
-                    } else {
-                        elUpdated.rollBack(this.context);
-                    }
-
-                    if (elUpdated.description.type === 'BULLET') {
-                        elUpdated.state.outDisplaylap = true;
-                    }
+                    // CONTER LOGIC
+                    // if (!elUpdated.state.outDisplaylap) {
+                    //     var delta = 1;
+                    //     switch (elUpdated.state.onDirection) {
+                    //         case 'RIGHT':
+                    //             elUpdated.state.x = delta;
+                    //             break;
+                    //         case 'DOWN':
+                    //             elUpdated.state.y = delta;
+                    //             break;
+                    //         case 'LEFT':
+                    //             elUpdated.state.x = this.displaySize.right - elUpdated.state.w - delta;
+                    //             break;
+                    //         case 'UP':
+                    //             elUpdated.state.y = this.displaySize.bottom - elUpdated.state.h - delta;
+                    //             break;
+                    //         default:
+                    //             throw new TypeError(`GameEngine.update() for !_isElementInDisplay expect properly onDirection case, but got ${elUpdated.onDirection}`);
+                    //             break;
+                    //     }
+                    // } else {
+                    //     elUpdated.rollBack(this.context);
+                    // }
+                    //
+                    // if (elUpdated.description.type === 'BULLET') {
+                    //     elUpdated.state.outDisplaylap = true;
+                    // }
 
                 }
             }

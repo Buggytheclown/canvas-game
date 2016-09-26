@@ -116,24 +116,16 @@ class Bullet extends AbstractMovable {
     };
 
     hit(obj) {
-        console.log('Bullet was hitten by: ', obj.type)
+        this.gameEngine.pop(this);
     };
 
     rollBack(context) {
-        this.clear(context);
-        // TODO type: BULLET - crutch!
-        this.rollBackDrawer.hit({type:'BULLET'}, Object.assign({}, this.state));
+        this.rollBackDrawer.draw(Object.assign({}, this.state));
         this.gameEngine.pop(this);
     };
 
     draw(context) {
-        this.clear(context);
         this.drawer.draw(context, this.state)
-    };
-
-    clear(context) {
-        var coordinates = this._prevState;
-        context.clearRect(coordinates.x, coordinates.y, coordinates.w, coordinates.h);
     };
 
 }
