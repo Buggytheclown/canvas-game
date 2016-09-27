@@ -10,12 +10,14 @@ export class Keybot {
         this.rollBack = ()=> {
             this._rollback()
         };
-        setInterval(this.mainLoop.bind(this), 1500);
+        setInterval(this.mainLoop.bind(this), 500);
     }
 
     mainLoop() {
-        this.setRndDirections();
-        this.space = Math.random() > 0.75;
+        if(Math.random() > 0.85){
+            this.setRndDirections();
+        }
+        this.space = Math.random() > 0.55;
     }
 
     setRndDirections() {

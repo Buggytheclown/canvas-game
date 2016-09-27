@@ -46,10 +46,26 @@ export function tankFactory({type, inBlock, driverType, spritePromise}) {
             break;
     }
 
+    var smallBooomsOnSpriteXYWH = [[268, 12, 9, 9], [238, 14, 6, 6], [268, 12, 9, 9]];
+    var bigBooomsOnSpriteXYWH = [[8, 9, 16, 15], [38, 6, 21, 20], [66, 4, 28, 25]];
+
     return new Tank({
         driver,
-        gun: new Gun(new StaticDrawer({spritePromise}), new BoomAnimate(spritePromise), 11 - speed*1.5),
-        rollBackDrawer: new BoomAnimate(spritePromise),
+        gun: new Gun({
+            framePerBullet: 20 + 15 * speed,
+            bulletSpeed: 13 - speed * 2,
+            bulletDrawer: new StaticDrawer({spritePromise}),
+            bulletRollBackDrawer: new BoomAnimate({
+                spritePromise,
+                onSpritePosition: smallBooomsOnSpriteXYWH,
+                boomWH: {w: 5, h: 5}
+            })
+        }),
+        rollBackDrawer: new BoomAnimate({
+            spritePromise,
+            onSpritePosition: bigBooomsOnSpriteXYWH,
+            boomWH: {w: 10, h: 10}
+        }),
         drawer: new DynamicDrawer({
             spritePromise: spritePromise,
             onSpriteType: driverType === 'BOT' ? 0 : 1
@@ -57,3 +73,4 @@ export function tankFactory({type, inBlock, driverType, spritePromise}) {
         state: {x: inBlock[0] * 40, y: inBlock[1] * 40, w: 30, h: 30, speed: speed, owner}
     })
 }
+

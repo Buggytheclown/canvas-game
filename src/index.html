@@ -16,10 +16,14 @@
     </style>
 </head>
 <body>
-    <canvas width="800" height="600" id="game"></canvas>
-    <br>
-    <button onclick="window.playGame=!window.playGame">Play/Pause</button>
+<div style="position: relative; width: 800px; height: 600px;">
+    <canvas style="position: absolute; top: 0; left: 0; z-index: 1; background-color: transparent;" width="800" height="600" id="game0"></canvas>
+    <canvas style="position: absolute; top: 0; left: 0; z-index: 2; background-color: transparent;" width="800" height="600" id="game1"></canvas>
+    <canvas style="position: absolute; top: 0; left: 0; z-index: 3; background-color: transparent;" width="800" height="600" id="game2"></canvas>
+</div>
+<br>
+<button onclick="window.playGame=!window.playGame">Play/Pause</button>
 
-    <script src="/app/bundle.js"></script>
+<script src="/app/bundle.js"></script>
 </body>
 </html>

@@ -3,11 +3,11 @@ import {AbstractMovable} from "./abstractMovable";
 
 export class Gun {
 
-    constructor(bulletDrawer, bulletRollBackDrawer, speed) {
+    constructor({bulletDrawer, bulletRollBackDrawer, bulletSpeed, framePerBullet}) {
         this.bulletDrawer = bulletDrawer;
         this.bulletRollBackDrawer = bulletRollBackDrawer;
-        this.gunState = {framePerBullet: 40, frameToShoot: 0};
-        this.bulletState = {x: null, y: null, h: 5, w: 8, onDirection: null, speed: speed}
+        this.gunState = {framePerBullet: framePerBullet, frameToShoot: 0};
+        this.bulletState = {x: null, y: null, h: 5, w: 8, onDirection: null, speed: bulletSpeed}
     }
 
     update() {
